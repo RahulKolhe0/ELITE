@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Post {{ post.id }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div style="max-width:700px;margin:20px auto;">
+    <a href="{{ url_for('main_page') }}">← Back to feed</a>
+    <div class="post" style="margin-top:10px;">
+      <div class="post-header">
+        <strong>{{ post.username }}</strong>
+        <span style="margin-left:auto;color:gray;">{{ post.created_at }}</span>
+      </div>
+      <div class="post-content">{{ post.content }}</div>
+      <div style="margin-top:10px;">
+        <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}" style="display:inline;">
+            <button type="submit">Like ({{ likes }})</button>
+        </form>
+        <span style="margin-left:10px;">{{ post.views }} views</span>
+      </div>
+    </div>
+
+    <h3 style="margin-top:20px;">Top comments</h3>
+    {% for c in top_comments %}
+      <div style="border-top:1px solid #ddd;padding:10px 0;">
+        <strong>{{ c[0] }}</strong> <small style="color:gray">{{ c[3] }}</small>
+        <div>{{ c[2] }}</div>
+        <form method="POST" action="{{ url_for('comment_like', comment_id=c[0]) }}">
+            <button type="submit">👍 Like ({{ c[4] }})</button>
+        </form>
+      </div>
+    {% endfor %}
+
+    {% if remaining and remaining > 0 %}
+      <a href="{{ url_for('post_comments', post_id=post.id) }}">View {{ remaining }} more comments</a>
+    {% endif %}
+
+    <!-- Quick add comment -->
+    <div style="margin-top:20px;">
+      <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}">
+        <input type="text" name="comment" placeholder="Write a comment..." required style="width:70%;">
+        <button type="submit">Comment</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

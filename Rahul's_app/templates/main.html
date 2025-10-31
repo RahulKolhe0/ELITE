@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page - Rahul's App</title>
+    <style>
+        /* ======= Embedded main.css ======= */
+        body.main-page {
+            background: url('{{ url_for("static", filename="images/main_page_wall.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            color: #000;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        /* Sidebar */
+        #sidebar {
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 220px;
+            min-width: 80px;
+            transition: width 0.3s;
+            display: flex;
+            flex-direction: column;
+
+            position: sticky;     /* keeps it fixed relative to the viewport */
+            top: 0;
+            height: 70vh;        /* full screen height */
+            overflow-y: auto;     /* allows internal scroll if content exceeds height */
+        }
+
+
+        #sidebar.collapsed { width: 60px; }
+
+        #sidebar .hamburger {
+            cursor: pointer;
+            font-size: 24px;
+            padding: 15px;
+        }
+
+        #sidebar .profile {
+            text-align: center;
+            padding: 15px;
+        }
+
+        #sidebar .profile img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #sidebar ul li {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        #sidebar ul li:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        #sidebar ul li i {
+            margin-right: 10px;
+            font-size: 18px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        #sidebar.collapsed ul li span { display: none; }
+
+        /* Main feed */
+        #main-feed {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .post {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-content {
+    text-align: left;        /* force left alignment */
+    white-space: pre-wrap;   /* preserve line breaks if user adds them */
+    word-wrap: break-word;   /* wrap long words */
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+
+        .post-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .post-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .post-actions button:hover {
+            transform: scale(1.05);
+            color: #ff2e75;
+        }
+
+
+        /* Post button styling */
+        .create-post-form button {
+            background-color: #ff4f8b;      /* pinkish tone */
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .create-post-form button:hover {
+            background-color: #ff2e75;      /* deeper pink when hovered */
+            transform: scale(1.05);         /* subtle zoom effect */
+        }
+
+
+        .comment-section {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+
+        .comment {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .comment img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .comment-content {
+            background-color: #f5f5f5;
+            padding: 8px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+    word-wrap: break-word;
+        }
+
+        .comment-section input[type="text"] {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 6px;
+}
+.comment-section button {
+    background-color: #007bff;
+    color: white;
+    border-radius: 6px;
+    padding: 6px 10px;
+    border: none;
+    cursor: pointer;
+}
+.comment-section button:hover {
+    background-color: #0056b3;
+}
+
+
+        /* Logout Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-width: 300px;
+            width: 90%;
+        }
+
+        .modal-content button {
+            margin: 10px 5px 0 5px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-confirm { background-color: #007bff; color: white; }
+        .btn-cancel { background-color: #ccc; color: black; }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                position: absolute;
+                z-index: 100;
+                height: 100%;
+                left: -220px;
+            }
+
+            #sidebar.collapsed {
+                left: 0;
+                width: 220px;
+            }
+
+            #main-feed { padding: 10px; }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+</head>
+<body class="main-page">
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="hamburger">&#9776;</div>
+        <div class="profile">
+            <img src="{{ url_for('static', filename='images/wp3666334.png') }}" alt="Profile">
+            <p>{{ username }}</p>
+        </div>
+        <ul>
+            <li><i>🏠</i> <span>Home</span></li>
+            <li><i>🔍</i> <span>Search</span></li>
+            <li><i>✉️</i> <span>Messages</span></li>
+            <li><i>🔔</i> <span>Notifications</span></li>
+            <li><i>👥</i> <span>My Network</span></li>
+            <li><i>⋯</i> <span>More</span></li>
+            <li><i>🚪</i> <span><a href="{{ url_for('logout') }}" id="logoutBtn">Logout</a></span></li>
+        </ul>
+    </div>
+
+    <!-- Main feed -->
+    <div id="main-feed">
+        <div class="post">
+            <form class="create-post-form" method="POST" action="{{ url_for('create_post') }}">
+                <textarea name="content" placeholder="What's on your mind?" style="width:99%;height:80px;border-radius:8px;padding:8px;"></textarea>
+                <br>
+                <button type="submit">Post</button>
+            </form>
+        </div>
+
+        {% for post in posts %}
+        <div class="post" data-post-id="{{ post.id }}">
+            <div class="post-header">
+                <img src="{{ url_for('static', filename='images/wp3666334.png') }}" alt="avatar">
+                <div>
+                    <strong>{{ post.username }}</strong><br>
+                    <small style="color:gray;">{{ post.created_at }} · {{ post.views or 0 }} views</small>
+                </div>
+                <span style="margin-left:auto; font-size:12px; color:gray;">#{{ post.id }}</span>
+            </div>
+
+            <div class="post-content">{{ post.content }}</div>
+
+            <div class="post-actions">
+                <form method="POST" action="{{ url_for('like_post', post_id=post.id) }}">
+                    <button class="ajax-like-btn" data-post-id="{{ post.id }}">
+    👍 Like (<span class="like-count">{{ post.likes }}</span>)
+</button>
+                </form>
+                <button type="button" class="comment-toggle" data-post-id="{{ post.id }}">💬 Comment</button>
+                <form method="POST" action="{{ url_for('bookmark_post', post_id=post.id) }}">
+                    <button type="submit">🔖 Bookmark</button>
+                </form>
+                <form method="POST" action="{{ url_for('share_post', post_id=post.id) }}">
+                    <button type="submit">↗ Share</button>
+                </form>
+            </div>
+
+            <div class="comment-section" id="comments-{{ post.id }}">
+                {% if post.comments %}
+                    {% for c in post.comments %}
+                    <div class="comment">
+                        <img src="{{ url_for('static', filename='images/wp3666334.png') }}" alt="cavatar">
+                        <div class="comment-content">
+                            <strong>{{ c[0] }}</strong>
+                            <div>{{ c[1] }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color:gray;">No comments yet. Be the first!</p>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}">
+                    <input type="text" name="comment" placeholder="Write a comment..." required style="width:80%;padding:6px;">
+                    <button type="submit">Post</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <p>Are you sure you want to logout?</p>
+            <button class="btn-confirm" id="confirmLogout">Yes</button>
+            <button class="btn-cancel" id="cancelLogout">No</button>
+        </div>
+    </div>
+    <!-- ======= JavaScript Section ======= -->
+</body>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</html>

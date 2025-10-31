@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELITE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="index-page">
+    <header>
+        <div class="navbar">
+            <h1>
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="ELITE Logo" class="logo">
+        </h1>
+            <div class="right-buttons">
+                <a href="/login" class="btn">Login</a>
+                <a href="/signup" class="btn">Signup</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <p class="welcome-text">Welcome to ELITE — a social web app where people connect and share freely!</p>
+    </main>
+</body>
+</html>
